@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mini-hcm
+  namespace: default
+  labels:
+    app: mini-hcm
+    version: v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mini-hcm
+  template:
+    metadata:
+      labels:
+        app: mini-hcm
+    spec:
+      containers:
+        - name: mini-hcm
+          image: crpi-f1uyeu878m1992sd.cn-zhangjiakou.personal.cr.aliyuncs.com/myhcm-001/mini-hcm:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8000
+              name: http
+          env:
+            - name: HOST
+              value: "0.0.0.0"
+            - name: PORT
+              value: "8000"
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+          livenessProbe:
+            httpGet:
+              path: /api/summary
+              port: 8000
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /api/summary
+              port: 8000
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
+          volumeMounts:
+            - name: data
+              mountPath: /app/data
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: mini-hcm-pvc
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
