@@ -3,198 +3,196 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Mini HCM</title>
-    <link rel="stylesheet" href="/styles.css" />
+    <title>FlowCRM 客户管理工作台</title>
+    <meta
+      name="description"
+      content="一个可直接部署到 GitHub Pages 的静态 CRM 网页项目示例。"
+    />
+    <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
-    <aside class="shell-nav">
-      <div class="brand">
-        <span class="brand-mark">H</span>
-        <div>
-          <strong>Mini HCM</strong>
-          <span>Core HR</span>
-        </div>
-      </div>
-      <button class="nav-item active" data-view="people">人员主数据</button>
-      <button class="nav-item" data-view="performance">绩效考评</button>
-    </aside>
+    <div class="app">
+      <aside class="sidebar" aria-label="主导航">
+        <a class="brand" href="./index.html" aria-label="FlowCRM 首页">
+          <span class="brand-mark" aria-hidden="true">F</span>
+          <span>
+            <strong>FlowCRM</strong>
+            <small>GitHub Pages Demo</small>
+          </span>
+        </a>
 
-    <main class="app-shell">
-      <header class="topbar">
-        <div>
-          <p class="eyebrow">企业人力核心系统</p>
-          <h1 id="viewTitle">人员主数据</h1>
-        </div>
-        <div class="top-actions">
-          <button class="icon-button" id="refreshBtn" title="刷新">↻</button>
-          <button class="primary-button" id="addEmployeeBtn">新增员工</button>
-        </div>
-      </header>
+        <nav class="nav-list">
+          <button class="nav-button is-active" type="button" data-view="dashboard">
+            <span data-icon="layout-dashboard" aria-hidden="true"></span>
+            <span>工作台</span>
+          </button>
+          <button class="nav-button" type="button" data-view="customers">
+            <span data-icon="users" aria-hidden="true"></span>
+            <span>客户</span>
+          </button>
+          <button class="nav-button" type="button" data-view="deals">
+            <span data-icon="kanban-square" aria-hidden="true"></span>
+            <span>商机</span>
+          </button>
+        </nav>
 
-      <section class="metrics" id="metrics"></section>
+        <section class="sidebar-note" aria-label="发布状态">
+          <span data-icon="cloud-upload" aria-hidden="true"></span>
+          <p>推送到 GitHub 后，Actions 会自动发布到 Pages。</p>
+        </section>
+      </aside>
 
-      <section class="view active" id="peopleView">
-        <div class="toolbar">
-          <label class="search-box">
-            <span>⌕</span>
-            <input id="employeeSearch" type="search" placeholder="搜索姓名、工号、岗位、邮箱" />
+      <main class="main">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow">CRM 网页项目实例</p>
+            <h1 id="pageTitle">客户增长工作台</h1>
+          </div>
+          <div class="top-actions">
+            <label class="search">
+              <span data-icon="search" aria-hidden="true"></span>
+              <input id="globalSearch" type="search" placeholder="搜索客户、联系人、行业" />
+            </label>
+            <button class="icon-button" id="resetDataBtn" type="button" aria-label="重置演示数据" title="重置演示数据">
+              <span data-icon="rotate-ccw" aria-hidden="true"></span>
+            </button>
+            <button class="primary-button" id="openCustomerDialog" type="button">
+              <span data-icon="plus" aria-hidden="true"></span>
+              <span>新增客户</span>
+            </button>
+          </div>
+        </header>
+
+        <section class="metrics" id="metrics" aria-label="关键指标"></section>
+
+        <section class="view is-active" id="dashboardView" aria-labelledby="pageTitle">
+          <div class="workspace">
+            <section class="panel">
+              <div class="panel-header">
+                <div>
+                  <h2>重点客户</h2>
+                  <p>按阶段、价值和最近跟进排序</p>
+                </div>
+                <select id="stageFilter" aria-label="按阶段筛选">
+                  <option value="">全部阶段</option>
+                  <option>新线索</option>
+                  <option>需求确认</option>
+                  <option>方案报价</option>
+                  <option>合同推进</option>
+                  <option>已成交</option>
+                </select>
+              </div>
+              <div class="customer-list" id="customerList"></div>
+            </section>
+
+            <section class="panel">
+              <div class="panel-header">
+                <div>
+                  <h2>今日待办</h2>
+                  <p>跟进动作保持不断档</p>
+                </div>
+              </div>
+              <div class="task-list" id="taskList"></div>
+            </section>
+          </div>
+        </section>
+
+        <section class="view" id="customersView" aria-labelledby="pageTitle">
+          <section class="panel">
+            <div class="panel-header">
+              <div>
+                <h2>客户档案</h2>
+                <p>点击客户可查看跟进建议</p>
+              </div>
+              <span class="count-pill" id="customerCount">0 个客户</span>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>客户</th>
+                    <th>行业</th>
+                    <th>阶段</th>
+                    <th>负责人</th>
+                    <th>预计金额</th>
+                    <th>下次跟进</th>
+                  </tr>
+                </thead>
+                <tbody id="customerRows"></tbody>
+              </table>
+            </div>
+          </section>
+        </section>
+
+        <section class="view" id="dealsView" aria-labelledby="pageTitle">
+          <div class="kanban" id="dealBoard" aria-label="商机看板"></div>
+        </section>
+      </main>
+    </div>
+
+    <dialog id="customerDialog">
+      <form id="customerForm" class="dialog-form" method="dialog">
+        <div class="dialog-title">
+          <h2>新增客户</h2>
+          <button class="icon-button" value="cancel" type="submit" aria-label="关闭">
+            <span data-icon="x" aria-hidden="true"></span>
+          </button>
+        </div>
+
+        <label>
+          客户名称
+          <input name="name" required placeholder="例如 星河制造集团" />
+        </label>
+        <label>
+          联系人
+          <input name="contact" required placeholder="例如 李明" />
+        </label>
+        <label>
+          行业
+          <input name="industry" required placeholder="例如 智能制造" />
+        </label>
+        <div class="form-row">
+          <label>
+            阶段
+            <select name="stage">
+              <option>新线索</option>
+              <option>需求确认</option>
+              <option>方案报价</option>
+              <option>合同推进</option>
+              <option>已成交</option>
+            </select>
           </label>
-          <select id="departmentFilter">
-            <option value="">全部部门</option>
-          </select>
-          <select id="statusFilter">
-            <option value="">全部状态</option>
-            <option>在职</option>
-            <option>试用期</option>
-            <option>离职</option>
-          </select>
+          <label>
+            预计金额
+            <input name="amount" type="number" min="0" step="1000" required placeholder="80000" />
+          </label>
         </div>
-
-        <div class="workspace-grid">
-          <section class="panel table-panel">
-            <div class="panel-title">
-              <h2>员工档案</h2>
-              <span id="employeeCount">0 人</span>
-            </div>
-            <div class="table-wrap">
-              <table>
-                <thead>
-                  <tr>
-                    <th>工号</th>
-                    <th>姓名</th>
-                    <th>部门</th>
-                    <th>岗位</th>
-                    <th>状态</th>
-                    <th>绩效均分</th>
-                  </tr>
-                </thead>
-                <tbody id="employeeRows"></tbody>
-              </table>
-            </div>
-          </section>
-
-          <section class="panel detail-panel">
-            <div class="panel-title">
-              <h2>员工信息</h2>
-              <button class="ghost-button" id="markLeftBtn">标记离职</button>
-            </div>
-            <form id="employeeForm" class="form-grid">
-              <input type="hidden" name="id" />
-              <label>工号<input name="employee_no" required /></label>
-              <label>姓名<input name="name" required /></label>
-              <label>部门<input name="department" required /></label>
-              <label>岗位<input name="position" required /></label>
-              <label>直属上级<input name="manager" /></label>
-              <label>状态
-                <select name="status">
-                  <option>在职</option>
-                  <option>试用期</option>
-                  <option>离职</option>
-                </select>
-              </label>
-              <label>入职日期<input name="hire_date" type="date" /></label>
-              <label>工作地点<input name="location" /></label>
-              <label>用工类型
-                <select name="employment_type">
-                  <option>全职</option>
-                  <option>兼职</option>
-                  <option>实习</option>
-                  <option>外包</option>
-                </select>
-              </label>
-              <label>邮箱<input name="email" type="email" /></label>
-              <label>手机<input name="phone" /></label>
-              <div class="form-actions">
-                <button type="button" class="ghost-button" id="clearEmployeeBtn">清空</button>
-                <button type="submit" class="primary-button">保存档案</button>
-              </div>
-            </form>
-          </section>
+        <div class="form-row">
+          <label>
+            负责人
+            <input name="owner" required placeholder="例如 Sophia" />
+          </label>
+          <label>
+            下次跟进
+            <input name="nextAction" type="date" required />
+          </label>
         </div>
-      </section>
-
-      <section class="view" id="performanceView">
-        <div class="toolbar">
-          <select id="cycleFilter"></select>
-          <button class="primary-button" id="openCycleBtn">新增周期</button>
-        </div>
-
-        <div class="workspace-grid performance-grid">
-          <section class="panel table-panel">
-            <div class="panel-title">
-              <h2>考评记录</h2>
-              <span id="reviewCount">0 条</span>
-            </div>
-            <div class="table-wrap">
-              <table>
-                <thead>
-                  <tr>
-                    <th>员工</th>
-                    <th>部门</th>
-                    <th>周期</th>
-                    <th>总分</th>
-                    <th>等级</th>
-                    <th>状态</th>
-                  </tr>
-                </thead>
-                <tbody id="reviewRows"></tbody>
-              </table>
-            </div>
-          </section>
-
-          <section class="panel detail-panel">
-            <div class="panel-title">
-              <h2>绩效考评</h2>
-              <span id="scorePreview">3.00 达标</span>
-            </div>
-            <form id="reviewForm" class="form-grid">
-              <input type="hidden" name="id" />
-              <label>员工<select name="employee_id" required></select></label>
-              <label>周期<select name="cycle_id" required></select></label>
-              <label>考评人<input name="reviewer" required /></label>
-              <label>状态
-                <select name="status">
-                  <option>草稿</option>
-                  <option>已提交</option>
-                  <option>已校准</option>
-                  <option>已归档</option>
-                </select>
-              </label>
-              <label>目标达成<input name="goals_score" type="number" min="1" max="5" step="0.1" value="3" /></label>
-              <label>能力表现<input name="competency_score" type="number" min="1" max="5" step="0.1" value="3" /></label>
-              <label>价值观<input name="values_score" type="number" min="1" max="5" step="0.1" value="3" /></label>
-              <label class="wide">评语<textarea name="comments" rows="4"></textarea></label>
-              <div class="form-actions">
-                <button type="button" class="ghost-button" id="clearReviewBtn">清空</button>
-                <button type="submit" class="primary-button">保存考评</button>
-              </div>
-            </form>
-          </section>
-        </div>
-      </section>
-    </main>
-
-    <dialog id="cycleDialog">
-      <form id="cycleForm" method="dialog" class="dialog-form">
-        <h2>新增绩效周期</h2>
-        <label>周期名称<input name="name" required placeholder="例如 2026 下半年绩效" /></label>
-        <label>开始日期<input name="start_date" type="date" required /></label>
-        <label>结束日期<input name="end_date" type="date" required /></label>
-        <label>状态
-          <select name="status">
-            <option>进行中</option>
-            <option>计划中</option>
-            <option>已归档</option>
-          </select>
+        <label>
+          跟进备注
+          <textarea name="note" rows="3" placeholder="记录关键诉求、预算、决策链或下一步动作"></textarea>
         </label>
         <div class="form-actions">
-          <button value="cancel" class="ghost-button">取消</button>
-          <button value="default" class="primary-button">保存</button>
+          <button class="secondary-button" value="cancel" type="submit">取消</button>
+          <button class="primary-button" value="default" type="submit">
+            <span data-icon="save" aria-hidden="true"></span>
+            <span>保存客户</span>
+          </button>
         </div>
       </form>
     </dialog>
 
-    <div id="toast" class="toast"></div>
-    <script src="/app.js"></script>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <script src="./app.js"></script>
   </body>
 </html>
