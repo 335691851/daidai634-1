@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FlowCRM 客户管理工作台</title>
+    <meta
+      name="description"
+      content="一个可直接部署到 GitHub Pages 的静态 CRM 网页项目示例。"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app">
+      <aside class="sidebar" aria-label="主导航">
+        <a class="brand" href="./index.html" aria-label="FlowCRM 首页">
+          <span class="brand-mark" aria-hidden="true">F</span>
+          <span>
+            <strong>FlowCRM</strong>
+            <small>GitHub Pages Demo</small>
+          </span>
+        </a>
+
+        <nav class="nav-list">
+          <button class="nav-button is-active" type="button" data-view="dashboard">
+            <span data-icon="layout-dashboard" aria-hidden="true"></span>
+            <span>工作台</span>
+          </button>
+          <button class="nav-button" type="button" data-view="customers">
+            <span data-icon="users" aria-hidden="true"></span>
+            <span>客户</span>
+          </button>
+          <button class="nav-button" type="button" data-view="deals">
+            <span data-icon="kanban-square" aria-hidden="true"></span>
+            <span>商机</span>
+          </button>
+        </nav>
+
+        <section class="sidebar-note" aria-label="发布状态">
+          <span data-icon="cloud-upload" aria-hidden="true"></span>
+          <p>推送到 GitHub 后，Actions 会自动发布到 Pages。</p>
+        </section>
+      </aside>
+
+      <main class="main">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow">CRM 网页项目实例</p>
+            <h1 id="pageTitle">客户增长工作台</h1>
+          </div>
+          <div class="top-actions">
+            <label class="search">
+              <span data-icon="search" aria-hidden="true"></span>
+              <input id="globalSearch" type="search" placeholder="搜索客户、联系人、行业" />
+            </label>
+            <button class="icon-button" id="resetDataBtn" type="button" aria-label="重置演示数据" title="重置演示数据">
+              <span data-icon="rotate-ccw" aria-hidden="true"></span>
+            </button>
+            <button class="primary-button" id="openCustomerDialog" type="button">
+              <span data-icon="plus" aria-hidden="true"></span>
+              <span>新增客户</span>
+            </button>
+          </div>
+        </header>
+
+        <section class="metrics" id="metrics" aria-label="关键指标"></section>
+
+        <section class="view is-active" id="dashboardView" aria-labelledby="pageTitle">
+          <div class="workspace">
+            <section class="panel">
+              <div class="panel-header">
+                <div>
+                  <h2>重点客户</h2>
+                  <p>按阶段、价值和最近跟进排序</p>
+                </div>
+                <select id="stageFilter" aria-label="按阶段筛选">
+                  <option value="">全部阶段</option>
+                  <option>新线索</option>
+                  <option>需求确认</option>
+                  <option>方案报价</option>
+                  <option>合同推进</option>
+                  <option>已成交</option>
+                </select>
+              </div>
+              <div class="customer-list" id="customerList"></div>
+            </section>
+
+            <section class="panel">
+              <div class="panel-header">
+                <div>
+                  <h2>今日待办</h2>
+                  <p>跟进动作保持不断档</p>
+                </div>
+              </div>
+              <div class="task-list" id="taskList"></div>
+            </section>
+          </div>
+        </section>
+
+        <section class="view" id="customersView" aria-labelledby="pageTitle">
+          <section class="panel">
+            <div class="panel-header">
+              <div>
+                <h2>客户档案</h2>
+                <p>点击客户可查看跟进建议</p>
+              </div>
+              <span class="count-pill" id="customerCount">0 个客户</span>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>客户</th>
+                    <th>行业</th>
+                    <th>阶段</th>
+                    <th>负责人</th>
+                    <th>预计金额</th>
+                    <th>下次跟进</th>
+                  </tr>
+                </thead>
+                <tbody id="customerRows"></tbody>
+              </table>
+            </div>
+          </section>
+        </section>
+
+        <section class="view" id="dealsView" aria-labelledby="pageTitle">
+          <div class="kanban" id="dealBoard" aria-label="商机看板"></div>
+        </section>
+      </main>
+    </div>
+
+    <dialog id="customerDialog">
+      <form id="customerForm" class="dialog-form" method="dialog">
+        <div class="dialog-title">
+          <h2>新增客户</h2>
+          <button class="icon-button" value="cancel" type="submit" aria-label="关闭">
+            <span data-icon="x" aria-hidden="true"></span>
+          </button>
+        </div>
+
+        <label>
+          客户名称
+          <input name="name" required placeholder="例如 星河制造集团" />
+        </label>
+        <label>
+          联系人
+          <input name="contact" required placeholder="例如 李明" />
+        </label>
+        <label>
+          行业
+          <input name="industry" required placeholder="例如 智能制造" />
+        </label>
+        <div class="form-row">
+          <label>
+            阶段
+            <select name="stage">
+              <option>新线索</option>
+              <option>需求确认</option>
+              <option>方案报价</option>
+              <option>合同推进</option>
+              <option>已成交</option>
+            </select>
+          </label>
+          <label>
+            预计金额
+            <input name="amount" type="number" min="0" step="1000" required placeholder="80000" />
+          </label>
+        </div>
+        <div class="form-row">
+          <label>
+            负责人
+            <input name="owner" required placeholder="例如 Sophia" />
+          </label>
+          <label>
+            下次跟进
+            <input name="nextAction" type="date" required />
+          </label>
+        </div>
+        <label>
+          跟进备注
+          <textarea name="note" rows="3" placeholder="记录关键诉求、预算、决策链或下一步动作"></textarea>
+        </label>
+        <div class="form-actions">
+          <button class="secondary-button" value="cancel" type="submit">取消</button>
+          <button class="primary-button" value="default" type="submit">
+            <span data-icon="save" aria-hidden="true"></span>
+            <span>保存客户</span>
+          </button>
+        </div>
+      </form>
+    </dialog>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
